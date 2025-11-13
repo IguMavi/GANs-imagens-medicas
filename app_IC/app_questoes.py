@@ -66,7 +66,7 @@ elif st.session_state.fase == "teste":
     cols = st.columns(4)
     for idx, col in enumerate(cols):
         with col:
-            st.image(imagens_q[idx], width="container")
+            st.image(imagens_q[idx], use_container_width=True)
 
     # Opções de resposta
     opcoes = [f"Imagem {j+1}" for j in range(4)]
@@ -128,5 +128,6 @@ elif st.session_state.fase == "resultado":
         st.session_state.respostas = {}
         st.session_state.corrigir = False
         st.rerun()
+
 
 
