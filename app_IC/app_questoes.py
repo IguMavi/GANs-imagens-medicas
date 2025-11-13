@@ -9,8 +9,8 @@ st.set_page_config(page_title="Teste de Identificação", layout="wide")
 PASTAS = {
     "Reais com filtro": "reais_com_filtro",
     "Reais sem filtro": "reais_sem_filtro",  # ✅ correta
-    "Geradas com filtro": "geradas_com_filtro",
-    "Geradas sem filtro": "geradas_sem_filtro",
+    "Geradas com filtro": "fake_com_filtro",
+    "Geradas sem filtro": "fake_sem_filtro",
 }
 
 # --- FUNÇÃO PARA CARREGAR IMAGENS ---
@@ -127,3 +127,4 @@ elif st.session_state.fase == "resultado":
         st.session_state.respostas = {}
         st.session_state.corrigir = False
         st.rerun()
+
