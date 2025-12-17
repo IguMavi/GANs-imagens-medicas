@@ -17,9 +17,7 @@ credentials = Credentials.from_service_account_info(
 
 client = gspread.authorize(credentials)
 
-# 🚨 COLOQUE AQUI O ID DA PLANILHA
 SHEET_ID = "1w-wGrOZSTltGHEIxijO8zpwbKI2l0H3dqzpwUYJAcfI"
-
 sheet = client.open_by_key(SHEET_ID).sheet1
 
 
@@ -78,20 +76,43 @@ if st.session_state.fase == "inicio":
     st.markdown("---")
     st.write("""
     Este teste avalia a capacidade de identificar imagens **reais sem filtro**.
-    
-    - Cada questão contém **4 imagens**  
-    - Apenas **1** é real sem filtro  
-    - Escolha a que você acha ser a real  
+
+    - Cada questão contém **4 imagens**
+    - Apenas **1** é real sem filtro
+    - Escolha a que você acha ser a real
     """)
 
-    iniciar = st.button("🚀 Começar Teste", disabled=nome == "")
+    st.markdown("---")
+    st.subheader("📄 Termo de Consentimento")
+
+    termos = st.checkbox(
+        "Declaro estar ciente e de acordo com o uso das informações fornecidas neste formulário "
+        "para fins exclusivamente acadêmicos e científicos, vinculados ao projeto de Iniciação "
+        "Científica do INATEL intitulado “Geração de Imagens Médicas Artificiais com Redes Generativas "
+        "Adversariais para Expansão de Datasets Diagnósticos de Visão Computacional” "
+        "(orientação: Prof. José Andery Carneiro).\n\n"
+        "Os dados coletados serão utilizados apenas para avaliar a qualidade e a fidelidade "
+        "diagnóstica das imagens sintéticas geradas pela pesquisa, sem qualquer tentativa de "
+        "identificação dos participantes. Não haverá divulgação individualizada de respostas, "
+        "e todo o processamento será feito de forma agregada, em conformidade com a Lei Geral "
+        "de Proteção de Dados (LGPD – Lei 13.709/2018).\n\n"
+        "As informações fornecidas serão armazenadas somente durante a vigência da pesquisa "
+        "e eliminadas após sua conclusão.\n\n"
+        "Ao marcar esta opção, confirmo que li, compreendi e concordo com os termos acima."
+    )
+
+    iniciar = st.button(
+        "🚀 Começar Teste",
+        disabled=(nome == "" or not termos)
+    )
 
     if iniciar:
         st.session_state.dados_participante = {
             "nome": nome,
             "idade": idade,
             "profissao": profissao,
-            "tempo": tempo
+            "tempo": tempo,
+            "consentimento": True
         }
         st.session_state.fase = "teste"
         st.session_state.indice_q = 0
@@ -108,23 +129,18 @@ elif st.session_state.fase == "teste":
 
     st.title(f"🔍 Questão {i+1} de {num_questoes}")
 
-    # Pega uma imagem de cada categoria
     imagens_q = [listas[pasta][i] for pasta in listas]
 
-    # Embaralhamento consistente
     random.seed(i)
     random.shuffle(imagens_q)
 
-    # A imagem correta
     correta = listas["Reais sem filtro"][i]
 
-    # Mostrar imagens
     cols = st.columns(4)
     for idx, col in enumerate(cols):
         with col:
             st.image(imagens_q[idx], use_container_width=True)
 
-    # Opções
     opcoes = [f"Imagem {j+1}" for j in range(4)]
 
     escolha = st.radio(
@@ -134,7 +150,6 @@ elif st.session_state.fase == "teste":
         key=f"radio_{i}"
     )
 
-    # Registrar resposta
     if escolha:
         idx_escolha = int(escolha.split()[-1]) - 1
         st.session_state.respostas[i] = {
@@ -142,7 +157,6 @@ elif st.session_state.fase == "teste":
             "correta": correta
         }
 
-    # Navegação
     col1, col2, col3 = st.columns([1, 1, 2])
     with col1:
         if st.button("⬅️ Anterior", disabled=i == 0):
@@ -186,9 +200,6 @@ elif st.session_state.fase == "resultado":
     st.markdown(f"### 🏁 Pontuação final: **{acertos} / {num_questoes}**")
     st.divider()
 
-    # -----------------------------
-    # SALVAR NO GOOGLE SHEETS
-    # -----------------------------
     dados = st.session_state.dados_participante
 
     sheet.append_row([
@@ -196,11 +207,12 @@ elif st.session_state.fase == "resultado":
         dados["idade"],
         dados["profissao"],
         dados["tempo"],
+        dados["consentimento"],
         acertos,
         num_questoes
     ])
 
-    st.success("✔️ Resultado salvo com sucesso no Google Sheets!")
+    st.success("✔️ Resultado salvo com sucesso!")
 
     if st.button("🔁 Reiniciar Teste"):
         st.session_state.fase = "inicio"
