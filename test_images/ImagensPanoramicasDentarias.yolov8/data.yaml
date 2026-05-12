@@ -1,0 +1,13 @@
+train: ../train/images
+val: ../valid/images
+test: ../test/images
+
+nc: 1
+names: ['teeth']
+
+roboflow:
+  workspace: semblanos-development
+  project: semblanos-development
+  version: dataset
+  license: Private
+  url: https://app.roboflow.com/semblanos-development/semblanos-development/dataset
