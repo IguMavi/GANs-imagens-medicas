@@ -1,0 +1,13 @@
+train: FSF/train/images
+val: FSF/valid/images
+test: FSF/test/images
+
+nc: 1
+names: ['teeth']
+
+roboflow:
+  workspace: semblanos-development
+  project: imagenspanoramicasdentarias-3va0z
+  version: 2
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/semblanos-development/imagenspanoramicasdentarias-3va0z/dataset/2
